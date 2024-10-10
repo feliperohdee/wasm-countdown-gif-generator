@@ -40,7 +40,9 @@ export default {
         const res = new Response(bytes, {
             headers: {
 				'cache-control': 'public, max-age=3600',
-                'content-type': 'image/gif'
+                'content-type': 'image/gif',
+				'content-length': bytes.length,
+				'content-disposition': 'inline'
             }
         });
 

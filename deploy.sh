@@ -1,1 +1,1 @@
-yarn wrangler deploy
+./build.sh && yarn wrangler deploy
