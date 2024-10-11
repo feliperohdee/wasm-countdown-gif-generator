@@ -38,7 +38,10 @@ func build(this js.Value, args []js.Value) interface{} {
 	background := args[0].Get("background")
 	color := args[0].Get("color")
 	date := args[0].Get("date")
+	frames := args[0].Get("frames")
+	gmt := args[0].Get("gmt")
 	kind := args[0].Get("kind")
+	lang := args[0].Get("lang")
 
 	if background.IsUndefined() {
 		background = js.ValueOf("#000000")
@@ -54,16 +57,30 @@ func build(this js.Value, args []js.Value) interface{} {
 		date = js.ValueOf(time.Now().Add(TEN_DAYS).Format("2006-01-02T15:04:05.000Z"))
 	}
 
+	if frames.IsUndefined() {
+		frames = js.ValueOf(10)
+	}
+
 	if kind.IsUndefined() {
 		kind = js.ValueOf("rounded")
+	}
+
+	if lang.IsUndefined() {
+		lang = js.ValueOf("en")
+	}
+
+	if gmt.IsUndefined() {
+		gmt = js.ValueOf(0)
 	}
 
 	countdowm := NewCountdown(CountdownOptions{
 		Background: background.String(),
 		Color:      color.String(),
-		Frames:     10,
+		Frames:     frames.Int(),
+		GMT:        gmt.Int(),
 		Height:     200,
 		Kind:       kind.String(),
+		Lang:       lang.String(),
 		TargetDate: date.String(),
 		Width:      700,
 	})
@@ -106,6 +123,7 @@ type Countdown struct {
 	font       string
 	frames     int
 	kind       string
+	lang       string
 	targetDate time.Time
 	w, h       int
 }
@@ -115,7 +133,9 @@ type CountdownOptions struct {
 	Font       string
 	Color      string
 	Frames     int
+	GMT        int
 	Height     int
+	Lang       string
 	Kind       string
 	TargetDate string
 	Width      int
@@ -128,7 +148,14 @@ func NewCountdown(opts CountdownOptions) *Countdown {
 		panic(err)
 	}
 
-	if time.Now().After(targetDate) || time.Now().Equal(targetDate) {
+	now := time.Now()
+
+	if opts.GMT != 0 {
+		now = now.Add(time.Duration(opts.GMT) * time.Hour)
+		targetDate = targetDate.Add(time.Duration(opts.GMT) * time.Hour)
+	}
+
+	if now.After(targetDate) || now.Equal(targetDate) {
 		targetDate = time.Now()
 		opts.Frames = 1
 	}
@@ -138,6 +165,7 @@ func NewCountdown(opts CountdownOptions) *Countdown {
 		color:      parseHexString(opts.Color),
 		frames:     opts.Frames,
 		kind:       opts.Kind,
+		lang:       opts.Lang,
 		h:          opts.Height,
 		targetDate: targetDate,
 		w:          opts.Width,
@@ -210,6 +238,50 @@ func (c *Countdown) generateColorPalette() color.Palette {
 	return palette
 }
 
+func (c *Countdown) getTranslation(key string) string {
+	translations := map[string]map[string]string{
+		"ar": {"days": "أيام", "hours": "ساعات", "minutes": "دقائق", "seconds": "ثواني"},
+		"bg": {"days": "дни", "hours": "часа", "minutes": "минути", "seconds": "секунди"},
+		"cs": {"days": "dny", "hours": "hodiny", "minutes": "minuty", "seconds": "sekundy"},
+		"da": {"days": "dage", "hours": "timer", "minutes": "minutter", "seconds": "sekunder"},
+		"de": {"days": "Tage", "hours": "Stunden", "minutes": "Minuten", "seconds": "Sekunden"},
+		"el": {"days": "ημέρες", "hours": "ώρες", "minutes": "λεπτά", "seconds": "δευτερόλεπτα"},
+		"en": {"days": "days", "hours": "hours", "minutes": "minutes", "seconds": "seconds"},
+		"es": {"days": "días", "hours": "horas", "minutes": "minutos", "seconds": "segundos"},
+		"fa": {"days": "روز", "hours": "ساعت", "minutes": "دقیقه", "seconds": "ثانیه"},
+		"fi": {"days": "päivää", "hours": "tuntia", "minutes": "minuuttia", "seconds": "sekuntia"},
+		"fr": {"days": "jours", "hours": "heures", "minutes": "minutes", "seconds": "secondes"},
+		"he": {"days": "ימים", "hours": "שעות", "minutes": "דקות", "seconds": "שניות"},
+		"hi": {"days": "दिन", "hours": "घंटे", "minutes": "मिनट", "seconds": "सेकंड"},
+		"hu": {"days": "nap", "hours": "óra", "minutes": "perc", "seconds": "másodperc"},
+		"it": {"days": "giorni", "hours": "ore", "minutes": "minuti", "seconds": "secondi"},
+		"ja": {"days": "日", "hours": "時間", "minutes": "分", "seconds": "秒"},
+		"ko": {"days": "일", "hours": "시간", "minutes": "분", "seconds": "초"},
+		"lt": {"days": "dienos", "hours": "valandos", "minutes": "minutės", "seconds": "sekundės"},
+		"nl": {"days": "dagen", "hours": "uren", "minutes": "minuten", "seconds": "seconden"},
+		"no": {"days": "dager", "hours": "timer", "minutes": "minutter", "seconds": "sekunder"},
+		"pl": {"days": "dni", "hours": "godziny", "minutes": "minuty", "seconds": "sekundy"},
+		"pt": {"days": "dias", "hours": "horas", "minutes": "minutos", "seconds": "segundos"},
+		"ro": {"days": "zile", "hours": "ore", "minutes": "minute", "seconds": "secunde"},
+		"ru": {"days": "дни", "hours": "часы", "minutes": "минуты", "seconds": "секунды"},
+		"sk": {"days": "dni", "hours": "hodiny", "minutes": "minúty", "seconds": "sekundy"},
+		"sv": {"days": "dagar", "hours": "timmar", "minutes": "minuter", "seconds": "sekunder"},
+		"th": {"days": "วัน", "hours": "ชั่วโมง", "minutes": "นาที", "seconds": "วินาที"},
+		"tr": {"days": "gün", "hours": "saat", "minutes": "dakika", "seconds": "saniye"},
+		"uk": {"days": "дні", "hours": "години", "minutes": "хвилини", "seconds": "секунди"},
+		"vi": {"days": "ngày", "hours": "giờ", "minutes": "phút", "seconds": "giây"},
+		"zh": {"days": "天", "hours": "小时", "minutes": "分钟", "seconds": "秒"},
+	}
+
+	if trans, ok := translations[c.lang]; ok {
+		if value, ok := trans[key]; ok {
+			return value
+		}
+	}
+
+	return key
+}
+
 func (c *Countdown) loadFont(size float64) (font.Face, error) {
 	if _, ok := ALLOWED_FONTS[c.font]; !ok {
 		c.font = "impact"
@@ -269,15 +341,15 @@ func (c *Countdown) createFrameRounded(days, hours, minutes, seconds int) *image
 	y := float64(c.h) / 2
 
 	if c.kind == "rounded-ticks" || c.kind == "rounded-dots" {
-		c.drawDotsOrTicks(dc, startX, y, circleRadius, days, 31, "DAYS")
-		c.drawDotsOrTicks(dc, startX+spacing, y, circleRadius, hours, 24, "HOURS")
-		c.drawDotsOrTicks(dc, startX+2*spacing, y, circleRadius, minutes, 60, "MINUTES")
-		c.drawDotsOrTicks(dc, startX+3*spacing, y, circleRadius, seconds, 60, "SECONDS")
+		c.drawDotsOrTicks(dc, startX, y, circleRadius, days, 31, c.getTranslation("days"))
+		c.drawDotsOrTicks(dc, startX+spacing, y, circleRadius, hours, 24, c.getTranslation("hours"))
+		c.drawDotsOrTicks(dc, startX+2*spacing, y, circleRadius, minutes, 60, c.getTranslation("minutes"))
+		c.drawDotsOrTicks(dc, startX+3*spacing, y, circleRadius, seconds, 60, c.getTranslation("seconds"))
 	} else {
-		c.drawCircle(dc, startX, y, circleRadius, days, 31, "DAYS")
-		c.drawCircle(dc, startX+spacing, y, circleRadius, hours, 24, "HOURS")
-		c.drawCircle(dc, startX+2*spacing, y, circleRadius, minutes, 60, "MINUTES")
-		c.drawCircle(dc, startX+3*spacing, y, circleRadius, seconds, 60, "SECONDS")
+		c.drawCircle(dc, startX, y, circleRadius, days, 31, c.getTranslation("days"))
+		c.drawCircle(dc, startX+spacing, y, circleRadius, hours, 24, c.getTranslation("hours"))
+		c.drawCircle(dc, startX+2*spacing, y, circleRadius, minutes, 60, c.getTranslation("minutes"))
+		c.drawCircle(dc, startX+3*spacing, y, circleRadius, seconds, 60, c.getTranslation("seconds"))
 	}
 
 	return c.image(dc)
@@ -316,7 +388,7 @@ func (c *Countdown) drawCircle(dc *gg.Context, x, y, radius float64, value int, 
 	if err == nil {
 		dc.SetFontFace(face)
 	}
-	dc.DrawStringAnchored(label, x, y+25, 0.5, 0.5)
+	dc.DrawStringAnchored(strings.ToUpper(label), x, y+25, 0.5, 0.5)
 }
 
 func (c *Countdown) drawDotsOrTicks(dc *gg.Context, x, y, radius float64, value int, max int, label string) {
@@ -344,7 +416,7 @@ func (c *Countdown) drawDotsOrTicks(dc *gg.Context, x, y, radius float64, value 
 	if err == nil {
 		dc.SetFontFace(face)
 	}
-	dc.DrawStringAnchored(label, x, y+25, 0.5, 0.5)
+	dc.DrawStringAnchored(strings.ToUpper(label), x, y+25, 0.5, 0.5)
 }
 
 func (c *Countdown) drawDot(dc *gg.Context, x, y, radius float64, count int, progress int) {
@@ -380,10 +452,8 @@ func (c *Countdown) drawTick(dc *gg.Context, x, y, radius float64, count int, pr
 
 		if i <= progress {
 			dc.SetColor(c.color)
-			// dc.SetLineWidth(3)
 		} else {
 			dc.SetColor(c.blendColorOverAlpha(50))
-			// dc.SetLineWidth(1)
 		}
 
 		dc.DrawLine(startX, startY, endX, endY)
