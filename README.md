@@ -20,9 +20,25 @@ Generate beautiful, animated countdown GIFs for your websites and applications u
 ![Basic Style](https://countdown.simpleimg.io/?date=2026-01-01&kind=basic)
 
 ### Different Languages
+
+### [English](https://countdown.simpleimg.io/?date=2026-01-01&lang=en)
+![English](https://countdown.simpleimg.io/?date=2026-01-01&lang=en)
+
+
+### [German](https://countdown.simpleimg.io/?date=2026-01-01&lang=de)
+![German](https://countdown.simpleimg.io/?date=2026-01-01&lang=de)
+
+### [Portuguese](https://countdown.simpleimg.io/?date=2026-01-01&lang=pt)
+![Portuguese](https://countdown.simpleimg.io/?date=2026-01-01&lang=pt)
+
+### [Spanish](https://countdown.simpleimg.io/?date=2026-01-01&lang=es)
 ![Spanish](https://countdown.simpleimg.io/?date=2026-01-01&lang=es)
-![Japanese](https://countdown.simpleimg.io/?date=2026-01-01&lang=ja)
+
+### [Russian](https://countdown.simpleimg.io/?date=2026-01-01&lang=ru)
 ![Russian](https://countdown.simpleimg.io/?date=2026-01-01&lang=ru)
+
+### [French](https://countdown.simpleimg.io/?date=2026-01-01&lang=fr)
+![French](https://countdown.simpleimg.io/?date=2026-01-01&lang=fr)
 
 ## ✨ Features
 
@@ -141,14 +157,6 @@ wrangler publish
 <img src="https://countdown.simpleimg.io/?date=2026-01-01&kind=rounded-dots&color=00ff00&background=333333&frames=30&lang=es" alt="Countdown" />
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - [fogleman/gg](https://github.com/fogleman/gg) for graphics generation
@@ -158,3 +166,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## ⭐ Show Your Support
 
 Give a ⭐️ if this project helped you!
+
+## 👨‍💻 Author
+
+**Felipe Rohde**
+* Twitter: [@felipe_rohde](https://twitter.com/felipe_rohde)
+* Github: [@feliperohdee](https://github.com/feliperohdee)
+* Email: feliperohdee@gmail.com
