@@ -150,6 +150,12 @@ func NewCountdown(opts CountdownOptions) *Countdown {
 
 	now := time.Now()
 
+	if opts.Frames < 1 {
+		opts.Frames = 1
+	} else if opts.Frames > 60 {
+		opts.Frames = 60
+	}
+
 	if opts.GMT != 0 {
 		now = now.Add(time.Duration(opts.GMT) * time.Hour)
 		targetDate = targetDate.Add(time.Duration(opts.GMT) * time.Hour)

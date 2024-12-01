@@ -1,10 +1,14 @@
 {
-  "name": "js",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "devDependencies": {
-    "wrangler": "^3.80.2"
-  },
-  "dependencies": {}
+    "name": "countdown-gif",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "devDependencies": {
+        "wrangler": "^3.80.2"
+    },
+    "dependencies": {},
+    "scripts": {
+        "dev": "wrangler dev",
+		"deploy": "./build.sh && yarn wrangler deploy"
+    }
 }
