@@ -1,5 +1,5 @@
 {
-    "name": "countdown-gif",
+    "name": "wasm-countdown-gif-generator",
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
