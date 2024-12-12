@@ -1,3 +1,6 @@
 name = "countdown-gif"
 main = "index.js"
 compatibility_date = "2023-10-15"
+
+[vars]
+ENV = "production"
