@@ -33,15 +33,16 @@ export default {
             const instance = await WebAssembly.instantiate(wasm, go.importObject);
 
             go.run(instance);
-            // const base64 = globalThis.build({
-            //     background: url.searchParams.get('background') || url.searchParams.get('bg') || '000',
-            //     color: url.searchParams.get('color') || 'fff',
-            //     date: new Date(url.searchParams.get('date') || '2025-01-01').toISOString(),
-            //     gmt: toNumber(url.searchParams.get('gmt'), 0),
-            //     frames: toNumber(url.searchParams.get('frames'), 10),
-            //     lang: url.searchParams.get('lang') || 'en',
-            //     kind: url.searchParams.get('kind') || 'rounded'
-            // });
+            
+			const base64 = globalThis.buildCountdown({
+                background: url.searchParams.get('background') || url.searchParams.get('bg') || '000',
+                color: url.searchParams.get('color') || 'fff',
+                date: new Date(url.searchParams.get('date') || '2025-01-01').toISOString(),
+                gmt: toNumber(url.searchParams.get('gmt'), 0),
+                frames: toNumber(url.searchParams.get('frames'), 10),
+                lang: url.searchParams.get('lang') || 'en',
+                kind: url.searchParams.get('kind') || 'rounded'
+            });
 
 			// const base64 = globalThis.buildLedBanner({
 			// 	forward: url.searchParams.get('forward') === 'true',
@@ -69,7 +70,7 @@ export default {
             //     frames: toNumber(url.searchParams.get('frames'), 15),
             // });
 
-			const base64 = globalThis.buildTypingText({});
+			// const base64 = globalThis.buildTypingText({});
 
             const binaryString = atob(base64);
             const bytes = new Uint8Array(binaryString.length);
